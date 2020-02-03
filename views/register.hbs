@@ -1,0 +1,73 @@
+{{#if message}}
+<div uk-alert>
+    <a class="uk-alert-close" uk-close></a>
+    <h3>{{message.title}}</h3>
+    <p>{{message.text}}</p>
+</div>
+{{/if}}
+<form action="/register" method="post">
+	    <div class="uk-margin">
+	        <div class="uk-inline">
+	            <span class="uk-form-icon" uk-icon="icon: phone"></span>
+	            <input class="uk-input" type="text" name="tel" id="tel" placeholder="номер телефона" value="{{tel}}" >
+	        </div>
+	    </div>
+        <div class="uk-margin">
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: user"></span>
+                <input class="uk-input" type="text" name="name" placeholder="имя пользователя" value="{{name}}" >
+            </div>
+        </div>
+		<div class="uk-margin">
+	        <div class="uk-inline">
+	            <a class="uk-form-icon uk-form-icon-flip" id="eyeicon" uk-icon="icon: fa-eye-slash"></a>
+	            <input class="uk-input" name="password" id="pwd" type="password" placeholder="пароль" value={{password}}>
+	        </div>
+	    </div>
+		<div>
+			<input type="submit" value="Регистрация" class="uk-button uk-button-primary"/>
+
+            <a class="uk-button uk-button-default" href="/login">Перейти ко входу</a>
+		</div>
+</form>
+<script>
+const tel = document.getElementById('tel')
+const pwd = document.getElementById('pwd')
+const eyeicon = document.getElementById('eyeicon')
+
+eyeicon.addEventListener('click', event => {
+    if (pwd.type == "password") {
+        pwd.type = "text";
+        eyeicon.setAttribute('uk-icon', 'icon: fa-eye');
+    } else {
+        pwd.type = "password";
+        eyeicon.setAttribute('uk-icon', 'icon: fa-eye-slash');
+    }
+})
+
+function validatePhoneNumber(tel) {
+    var re = /^\+{0,2}([\-\. ])?(\(?\d{0,3}\))?([\-\. ])?\(?\d{0,3}\)?([\-\. ])?\d{3}([\-\. ])?\d{4}/;
+    return re.test(tel);
+};
+
+tel.addEventListener('input', event => {
+    if (validatePhoneNumber(tel.value)) {
+        tel.classList.remove('uk-form-danger');
+        tel.classList.add('uk-form-success')
+    } else {
+        tel.classList.add('uk-form-danger')
+        tel.classList.remove('uk-form-success');
+    }
+})
+pwd.addEventListener('input', event => {
+    if (pwd.value.length>=6) {
+        pwd.classList.remove('uk-form-danger');
+        pwd.classList.add('uk-form-success')
+    } else {
+        pwd.classList.add('uk-form-danger')
+        pwd.classList.remove('uk-form-success');
+    }
+})
+
+
+</script>

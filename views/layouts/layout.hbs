@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+<!-- UIkit CSS -->
+<link rel="stylesheet" href="uikit.min.css" />
+
+<!-- UIkit JS -->
+<script src="uikit.min.js"></script>
+<script src="uikit-icons.min.js"></script>
+
+{{#each css}}
+    <link rel="stylesheet" href="/css/{{this}}" />
+{{/each}}
+</head>
+<body> <!-- class="uk-light"> -->
+    {{{ body }}}
+</body>
+</html>
