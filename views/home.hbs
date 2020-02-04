@@ -6,8 +6,14 @@
 
   <div id="send-container" class="uk-position-bottom">
       <form id="send-form" class="uk-form-horizontal">
-        <textarea  id="message-input" class="uk-textarea"></textarea>
-
+          <div id="input-text-area">
+              <textarea  id="message-input" class="uk-textarea"></textarea>
+          </div>
+          <img id="file-preview"></img>
+          <div id="input-file-area">
+                  <input type="file" id="file-to-upload" accept="image/png,image/gif,image/jpeg">
+          </div>
+        <label><input class="uk-checkbox" type="checkbox" id="send-file-chk">Файл</label>
         <button class="uk-button uk-button-primary" type="submit" id="send-button">Отправить</button>
         <!-- This is a button toggling the modal -->
         <button class="uk-button uk-button-default" type="button" id="room-settings-open">Настройки</button>
@@ -47,5 +53,5 @@
 </div>
 
     <script defer src="moment.min.js"></script>
-    <script defer src="socket.io.js"></script>
+    <script defer src="socket.io/socket.io.js"></script>
     <script defer src="client-script.js"></script>

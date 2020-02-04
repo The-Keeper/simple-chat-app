@@ -1,6 +1,7 @@
 .env
 package-lock.json
 db.sqlite3
+userdata/
 
 # Mac OS X
 .DS_Store

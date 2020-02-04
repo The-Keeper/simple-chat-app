@@ -12,8 +12,12 @@ const addUserToRoomBtn = document.getElementById('add-user-to-room')
 const selFU = document.getElementById('free-user-list');
 const roomUL = document.getElementById('room-list')
 const el_newRoomName = document.getElementById('add-room-newroomname')
-el_newRoomName.value = ''
+const checkFilebox = document.getElementById('send-file-chk')
+const inputFileField = document.getElementById('file-to-upload')
+const imgPreview = document.getElementById('file-preview')
 
+
+checkFilebox.checked = false;
 const userID  = bodyContainer.dataset.userId;
 var activeRoomID = -1;
 var activeChatOL = null;
@@ -92,6 +96,24 @@ function createMessage(chatOL, m, prepend = false) {
     var msgContent = document.createElement("div");
     msgContent.classList.add('msg-content');
 
+    msgContent.insertAdjacentHTML('afterbegin', `<div class="user">${userIdNameMap[m.sender_id]}</div>`);
+
+
+    switch(m.type) {
+      case 0:
+        for (let line of m.value.split('\n')) {
+            let par = document.createElement("p")
+            par.append(line)
+            msgContent.append(par)
+        }
+        break;
+      case 1:
+        msgContent.innerHTML = `<img src="/userdata/${m.value}"></img>`;
+        break;
+      default:
+        // code block
+    }
+
     if (m.sender_id == userID) {
         let closebutton = document.createElement("a");
         closebutton.setAttribute("uk-close","");
@@ -100,24 +122,13 @@ function createMessage(chatOL, m, prepend = false) {
         msgContent.prepend(closebutton)
     }
 
-    msgContent.insertAdjacentHTML('afterbegin', `<div class="user">${userIdNameMap[m.sender_id]}</div>`);
-
-    if (m.type == 0) {
-        for (let line of m.value.split('\n')) {
-            let par = document.createElement("p")
-            par.append(line)
-            msgContent.append(par)
-        }
-    }
-
-
     let moment_ts = moment.unix(m.timestamp/1000)
 
     let dateStr = moment_ts.format('L');
     console.log('Date string:',dateStr)
     var timeStr = moment_ts.format('LT');
     if (moment().format('L') !== dateStr) {
-        timeStr = dateStr + ', ' + timeStr;
+        timeStr = `${dateStr}, ${timeStr}`;
     }
     msgContent.insertAdjacentHTML('beforeend', `<time>${timeStr}</time>`);
 
@@ -234,10 +245,15 @@ messageForm.addEventListener('submit', e => {
     room_id: activeRoomID,
     tag: tag
   }
+  if (messageForm.classList.contains('file-loaded')) {
+      message.type = 1;
+      message.value = imgPreview.dataset.id;
+  }
   sent_msg[tag] = message;
   socket.emit('send-chat-message', message)
   // socket.emit('request-message-history', message)
   messageInput.value = ''
+  messageForm.classList.remove('file-loaded', 'input-file')
 })
 
 modalAllRooms.addEventListener('show', function(){
@@ -294,3 +310,31 @@ roomListContainer.addEventListener('scroll', event => {
         requestHistory(activeRoomID)
     }
 })
+
+checkFilebox.addEventListener('click', event => {
+    messageForm.classList.remove('file-loaded')
+    messageForm.classList.toggle('input-file')
+})
+
+inputFileField.addEventListener('change', function(e) {
+    console.log('FILE CHANGED', inputFileField.files)
+    if (inputFileField.files.length > 0) {
+        const formData = new FormData();
+        formData.append('inputFile', inputFileField.files[0]);
+
+      fetch('/upload', { // Your POST endpoint
+        method: 'POST',
+        body: formData // This is your file object
+      }).then((response) => response.json())
+        .then((result) => {
+        imgPreview.src = `/userdata/${result.id}`;
+        imgPreview.dataset.id = result.id;
+        messageForm.classList.add('file-loaded')
+          console.log('Success:', result);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+    e.target.value = null;
+}, false);

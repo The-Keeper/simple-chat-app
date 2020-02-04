@@ -141,7 +141,6 @@ module.exports = function(io, db, passportSocketIo) {
       socket.on('disconnect', () => {
           // socket has already left all "rooms"
       })
-
 })
 
 

@@ -6,12 +6,14 @@ const path = require("path");
 const hbs = require('express-handlebars')
 const bcrypt   = require('bcrypt')
 const socketio = require('socket.io')
+const fileUpload = require('express-fileupload');
 
 require('dotenv').config()
 const SESSION_TIMEOUT = parseInt(process.env.SESSION_TIMEOUT) || 60*60*1000 // one hour
 const PASSWORD_SALT_HASH_ROUNDS = parseInt(process.env.PASSWORD_SALT_HASH_ROUNDS) || 10
 const SECRET_KEY = process.env.SECRET || "secret"
 const SQLITE_FILENAME = process.env.SQLITE_FILENAME || "db.sqlite3"
+const UPLOAD_MAXSIZE = parseInt(process.env.UPLOAD_MAXSIZE) || 5*1024*1024 // 5 MB
 
 
 /* local imports */
@@ -20,6 +22,11 @@ const auth = require("./bin/auth")(db);
 
 var app = express();
 //app.use(expressValidator());
+
+app.use(fileUpload({
+    createParentPath: true,
+    limits: { fileSize: UPLOAD_MAXSIZE },
+}));
 
 const server = require('http').createServer(
     /*
@@ -38,6 +45,7 @@ const io = socketio.listen(server);
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use("/userdata", express.static(path.join(__dirname, 'userdata')));
 
 // Configure view engine to render Handlebars templates.
 app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layout', layoutsDir: __dirname + '/views/layouts/'}));
@@ -189,6 +197,23 @@ app.get('/profile',  auth.ensureAuthenticated,
     })
 
   });
+
+app.post('/upload', function(req, res) {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('No files were uploaded.');
+  }
+
+  // The name of the input field
+  let uploadFile = req.files.inputFile;
+  let file_name  = uploadFile.md5; // assume md5 are random enough
+
+  uploadFile.mv(`userdata/${file_name}`, function(err) {
+    if (err)
+      return res.status(500).send(err);
+
+      res.json({"id": file_name});
+  });
+});
 
   // error handlers
   // catch 404 and forward to error handler
