@@ -1,11 +1,10 @@
-.env
-package-lock.json
-db.sqlite3
-userdata/
-
-# Mac OS X
 .DS_Store
-
-# Node.js
-node_modules/
-npm-debug.log
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.env.*
+!.env.example
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
