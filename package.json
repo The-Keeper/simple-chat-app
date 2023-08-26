@@ -33,6 +33,7 @@
 	"type": "module",
 	"dependencies": {
 		"better-sqlite3": "^8.5.2",
-		"drizzle-orm": "^0.28.5"
+		"drizzle-orm": "^0.28.5",
+		"lucia": "^2.4.0"
 	}
 }
