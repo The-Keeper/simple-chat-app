@@ -32,8 +32,10 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@lucia-auth/adapter-sqlite": "^2.0.0",
 		"better-sqlite3": "^8.5.2",
 		"drizzle-orm": "^0.28.5",
+		"drizzle-zod": "^0.5.1",
 		"lucia": "^2.4.0"
 	}
 }
